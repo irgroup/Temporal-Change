@@ -4,13 +4,13 @@ services:
     build: ./index-tripclick-pyterrier/
     volumes:
       - ../data:/data
-    command: "--dataset_name=tripclick/test/head-t1"
+    command: "--dataset=tripclick/test/head-t1"
 
   index-tripclick-t2-pyterrier:
     build: ./index-tripclick-pyterrier/
     volumes:
       - ../data:/data
-    command: "--dataset_name=tripclick/test/head-t2"
+    command: "--dataset=tripclick/test/head-t2"
     depends_on:   
       index-tripclick-t1-pyterrier:
         condition: service_completed_successfully
@@ -19,7 +19,7 @@ services:
     build: ./index-tripclick-pyterrier/
     volumes:
       - ../data:/data
-    command: "--dataset_name=tripclick/test/head-t3"
+    command: "--dataset=tripclick/test/head-t3"
     depends_on:   
       index-tripclick-t2-pyterrier:
         condition: service_completed_successfully
@@ -29,13 +29,13 @@ services:
     build: ./index-longeval-pyterrier/
     volumes:
       - ../data:/data
-    command: "--dataset_name=longeval-WT"
+    command: "--dataset=longeval-WT"
 
   index-longeval-st-pyterrier:
     build: ./index-longeval-pyterrier/
     volumes:
       - ../data:/data
-    command: "--dataset_name=longeval-ST"
+    command: "--dataset=longeval-ST"
     depends_on:   
       index-longeval-wt-pyterrier:
         condition: service_completed_successfully
@@ -45,7 +45,7 @@ services:
     build: ./index-longeval-pyterrier/
     volumes:
       - ../data:/data
-    command: "--dataset_name=longeval-LT"
+    command: "--dataset=longeval-LT"
     depends_on:   
       index-longeval-st-pyterrier:
         condition: service_completed_successfully
@@ -55,13 +55,13 @@ services:
     build: ./index-ir_datasets-pyterrier/
     volumes:
       - ../data:/data
-    command: "--dataset_name=cord19/trec-covid/round1"
+    command: "--dataset=cord19/trec-covid/round1"
 
   index-treccovid-2-pyterrier:
     build: ./index-ir_datasets-pyterrier/
     volumes:
       - ../data:/data
-    command: "--dataset_name=cord19/trec-covid/round2"
+    command: "--dataset=cord19/trec-covid/round2"
     depends_on:   
       index-treccovid-1-pyterrier:
         condition: service_completed_successfully
@@ -70,7 +70,7 @@ services:
     build: ./index-ir_datasets-pyterrier/
     volumes:
       - ../data:/data
-    command: "--dataset_name=cord19/trec-covid/round3"
+    command: "--dataset=cord19/trec-covid/round3"
     depends_on:   
       index-treccovid-2-pyterrier:
         condition: service_completed_successfully
@@ -79,7 +79,7 @@ services:
     build: ./index-ir_datasets-pyterrier/
     volumes:
       - ../data:/data
-    command: "--dataset_name=cord19/trec-covid/round4"
+    command: "--dataset=cord19/trec-covid/round4"
     depends_on:   
       index-treccovid-3-pyterrier:
         condition: service_completed_successfully
@@ -88,7 +88,7 @@ services:
     build: ./index-ir_datasets-pyterrier/
     volumes:
       - ../data:/data
-    command: "--dataset_name=cord19/trec-covid/round5"
+    command: "--dataset=cord19/trec-covid/round5"
     depends_on:   
       index-treccovid-4-pyterrier:
         condition: service_completed_successfully

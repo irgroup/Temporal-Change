@@ -19,8 +19,8 @@ def get_artefact_path(artefact_name):
         raise ValueError(f"Artefact type `{artefact_type}` not supported!")
 
 
-def setup_index_dir(dataset_name):
-    index_path = get_artefact_path(dataset_name)
+def setup_index_dir(dataset):
+    index_path = get_artefact_path(dataset)
     os.makedirs(f"{index_path}/documents")
     os.makedirs(f"{index_path}/queries")
 
@@ -28,16 +28,16 @@ def setup_index_dir(dataset_name):
 def main():
     parser = ArgumentParser(description="")
     parser.add_argument(
-        "--dataset_name", help="Name or path to the dataset to be processed", required=True
+        "--dataset", help="Name or path to the dataset to be processed", required=True
     )
     args = parser.parse_args()
 
-    setup_index_dir(args.dataset_name)
+    setup_index_dir(args.dataset)
 
-    index_document_path = get_artefact_path(args.dataset_name) + "/documents"
-    index_query_path = get_artefact_path(args.dataset_name) + "/queries"
+    index_document_path = get_artefact_path(args.dataset) + "/documents"
+    index_query_path = get_artefact_path(args.dataset) + "/queries"
 
-    index(args.dataset_name, index_document_path, index_query_path)
+    index(args.dataset, index_document_path, index_query_path)
 
 if __name__ == "__main__":
     main()

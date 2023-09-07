@@ -12,8 +12,8 @@ from tqdm import tqdm
 from transformers import AutoModel, AutoTokenizer
 
 
-def fix_ir_dataset_naming(dataset_name):
-    return "-".join(dataset_name.split("/")[-2:])
+def fix_ir_dataset_naming(dataset):
+    return "-".join(dataset.split("/")[-2:])
 
 
 def load_model(model_name):
@@ -140,12 +140,12 @@ def create_index(index_dir, size=768):
     print("Done with indexing")
 
 
-def get_dataset_subcollection(dataset_name):
-    return dataset_name.split("-")[1]
+def get_dataset_subcollection(dataset):
+    return dataset.split("-")[1]
 
 
-def get_documents_path(dataset_name):
-    subcollection = get_dataset_subcollection(dataset_name)
+def get_documents_path(dataset):
+    subcollection = get_dataset_subcollection(dataset)
     if subcollection == "LT":
         return "/data/dataset/LongEval/test-collection/B-Long-September/English/Documents/Json/"
     elif subcollection == "ST":
@@ -154,8 +154,8 @@ def get_documents_path(dataset_name):
         return "/data/dataset/LongEval/publish/English/Documents/Json/"
 
 
-def get_querie_path(dataset_name):
-    subcollection = get_dataset_subcollection(dataset_name)
+def get_querie_path(dataset):
+    subcollection = get_dataset_subcollection(dataset)
     if subcollection == "LT":
         return {
             "test": "/data/dataset/LongEval/test-collection/B-Long-September/English/Queries/test09.tsv"
@@ -172,11 +172,11 @@ def get_querie_path(dataset_name):
 
 
 def index(
-    dataset_name, index_document_path, index_query_path, model_name, batch_size, save
+    dataset, index_document_path, index_query_path, model_name, batch_size, save
 ):
     load_model(model_name)
 
-    data = gen_docs(doc_path=get_documents_path(dataset_name), batch_size=batch_size)
+    data = gen_docs(doc_path=get_documents_path(dataset), batch_size=batch_size)
     encode(
         data=data,
         index_path=index_document_path,
@@ -185,7 +185,7 @@ def index(
         save_every=save,
     )
 
-    queries_paths = get_querie_path(dataset_name)
+    queries_paths = get_querie_path(dataset)
     for dataset_slice, path in queries_paths.items():
         encode_queries(path, index_query_path, dataset_slice, batch_size)
 

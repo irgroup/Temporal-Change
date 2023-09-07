@@ -10,7 +10,7 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-    command: ["--dataset_name=cord19/trec-covid/round1"]
+    command: ["--dataset=cord19/trec-covid/round1"]
 
 
   index-treccovid-2-d2q:
@@ -24,7 +24,7 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-    command: ["--dataset_name=cord19/trec-covid/round2"]
+    command: ["--dataset=cord19/trec-covid/round2"]
     depends_on:   
       index-treccovid-1-d2q:
         condition: service_completed_successfully
@@ -41,7 +41,7 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-    command: ["--dataset_name=cord19/trec-covid/round3"]
+    command: ["--dataset=cord19/trec-covid/round3"]
     depends_on:   
       index-treccovid-2-d2q:
         condition: service_completed_successfully
@@ -58,7 +58,7 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-    command: ["--dataset_name=cord19/trec-covid/round4"]
+    command: ["--dataset=cord19/trec-covid/round4"]
     depends_on:   
       index-treccovid-3-d2q:
         condition: service_completed_successfully
@@ -76,7 +76,7 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-    command: ["--dataset_name=cord19/trec-covid/round5"]
+    command: ["--dataset=cord19/trec-covid/round5"]
     depends_on:   
       index-treccovid-4-d2q:
         condition: service_completed_successfully
@@ -94,7 +94,7 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-    command: ["--dataset_name=longeval-WT"]
+    command: ["--dataset=longeval-WT"]
     depends_on:   
       index-longeval-wt-d2q:
         condition: service_completed_successfully
@@ -111,7 +111,7 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-    command: ["--dataset_name=longeval-ST"]
+    command: ["--dataset=longeval-ST"]
     depends_on:   
       index-longeval-wt-d2q:
         condition: service_completed_successfully
@@ -128,7 +128,7 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-    command: ["--dataset_name=longeval-LT"]
+    command: ["--dataset=longeval-LT"]
     depends_on:   
       index-longeval-st-d2q:
         condition: service_completed_successfully
@@ -146,7 +146,7 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-    command: ["--dataset_name=tripclick/test/head-t1"]
+    command: ["--dataset=tripclick/test/head-t1"]
     depends_on:   
       index-longeval-wt-d2q:
         condition: service_completed_successfully
@@ -163,7 +163,7 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-    command: ["--dataset_name=tripclick/test/head-t2"]
+    command: ["--dataset=tripclick/test/head-t2"]
     depends_on:   
       index-tripclick-t1-d2q:
         condition: service_completed_successfully
@@ -180,7 +180,7 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-    command: ["--dataset_name=tripclick/test/head-t3"]
+    command: ["--dataset=tripclick/test/head-t3"]
     depends_on:   
       index-tripclick-t2-d2q:
         condition: service_completed_successfully

@@ -6,12 +6,12 @@ if not pt.started():
 
 METHOD = os.getenv("METHOD")
 
-def get_dataset_subcollection(dataset_name):
-    return dataset_name.split("-")[1]
+def get_dataset_subcollection(dataset):
+    return dataset.split("-")[1]
 
 
-def get_querie_path(dataset_name):
-    subcollection = get_dataset_subcollection(dataset_name)
+def get_querie_path(dataset):
+    subcollection = get_dataset_subcollection(dataset)
     if subcollection == "LT":
         return  {"test": "/data/dataset/LongEval/test-collection/B-Long-September/English/Queries/test09.trec"}
     elif subcollection == "ST":
@@ -23,8 +23,8 @@ def get_querie_path(dataset_name):
             }
 
 
-def get_documents_path(dataset_name):
-    subcollection = get_dataset_subcollection(dataset_name)
+def get_documents_path(dataset):
+    subcollection = get_dataset_subcollection(dataset)
     if subcollection == "LT":
         return "/data/dataset/LongEval/test-collection/B-Long-September/English/Documents/Trec/"
     elif subcollection == "ST":
@@ -33,14 +33,14 @@ def get_documents_path(dataset_name):
         return "/data/dataset/LongEval/publish/English/Documents/Trec/"
 
 
-def move_queries(dataset_name, index_query_path):
-    querie_paths = get_querie_path(dataset_name)
+def move_queries(dataset, index_query_path):
+    querie_paths = get_querie_path(dataset)
     for key, path in querie_paths.items():
         shutil.copy(path, f"{index_query_path}/{key}.trec")
     
 
-def index(dataset_name, index_document_path, index_query_path):
-    move_queries(dataset_name, index_query_path)
+def index(dataset, index_document_path, index_query_path):
+    move_queries(dataset, index_query_path)
 
     indexer = pt.TRECCollectionIndexer(
         index_path=index_document_path,
@@ -49,7 +49,7 @@ def index(dataset_name, index_document_path, index_query_path):
         blocks=True,
         verbose=True,
     )
-    documents_path = get_documents_path(dataset_name)
+    documents_path = get_documents_path(dataset)
     documents = [os.path.join(documents_path, path) for path in os.listdir(documents_path)]
     indexref = indexer.index(documents)
 

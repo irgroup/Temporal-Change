@@ -18,8 +18,8 @@ def get_artefact_path(artefact_name):
         raise ValueError(f"Artefact type `{artefact_type}` not supported!")
 
 
-def setup_index_dir(dataset_name):
-    index_path = get_artefact_path(dataset_name)
+def setup_index_dir(dataset):
+    index_path = get_artefact_path(dataset)
     print(f"Setting up index directory at {index_path}")
     os.makedirs(f"{index_path}/documents")
     os.makedirs(f"{index_path}/queries")
@@ -29,7 +29,7 @@ def setup_index_dir(dataset_name):
 def main():
     parser = ArgumentParser(description="")
     parser.add_argument(
-        "--dataset_name", help="Name or path to the dataset to be processed", required=True
+        "--dataset", help="Name or path to the dataset to be processed", required=True
     )
     parser.add_argument(
         "--model_name", help="Name or path to the model", default="intfloat/e5-base"
@@ -38,7 +38,7 @@ def main():
         "--batch_size",
         type=int,
         default=32,
-        help="Batch size for encoding",
+        help="Batch size for encoding. Default: 32",
     )
     parser.add_argument(
         "--save",
@@ -55,13 +55,13 @@ def main():
 
     args = parser.parse_args()
 
-    dataset_name = fix_ir_dataset_naming(args.dataset_name)
-    setup_index_dir(dataset_name)
+    dataset = fix_ir_dataset_naming(args.dataset)
+    setup_index_dir(dataset)
 
-    index_document_path = get_artefact_path(dataset_name) + "/documents"
-    index_query_path = get_artefact_path(dataset_name) + "/queries"
+    index_document_path = get_artefact_path(dataset) + "/documents"
+    index_query_path = get_artefact_path(dataset) + "/queries"
 
-    index(args.dataset_name, index_document_path, index_query_path, args.model_name, args.batch_size, args.save, args.earty_stop)
+    index(args.dataset, index_document_path, index_query_path, args.model_name, args.batch_size, args.save, args.earty_stop)
 
 
 if __name__ == "__main__":

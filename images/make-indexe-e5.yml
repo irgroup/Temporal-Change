@@ -1,6 +1,6 @@
 services:
   index-treccovid-1-e5:
-    build: ./index-ir_datasets-E5/
+    build: ./index-ir_datasets-e5/
     volumes:
       - ../data:/data
     deploy:
@@ -10,11 +10,11 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-    command: ["--dataset_name=cord19/trec-covid/round1", "--save=1000"]
+    command: ["--dataset=cord19/trec-covid/round1", "--save=1000"]
 
 
   index-treccovid-2-e5:
-    build: ./index-ir_datasets-E5/
+    build: ./index-ir_datasets-e5/
     volumes:
       - ../data:/data
     deploy:
@@ -24,14 +24,14 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-    command: ["--dataset_name=cord19/trec-covid/round2", "--save=1000"]
+    command: ["--dataset=cord19/trec-covid/round2", "--save=1000"]
     depends_on:   
       index-treccovid-1-e5:
         condition: service_completed_successfully
 
 
   index-treccovid-3-e5:
-    build: ./index-ir_datasets-E5/
+    build: ./index-ir_datasets-e5/
     volumes:
       - ../data:/data
     deploy:
@@ -41,14 +41,14 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-    command: ["--dataset_name=cord19/trec-covid/round3", "--save=1000"]
+    command: ["--dataset=cord19/trec-covid/round3", "--save=1000"]
     depends_on:   
       index-treccovid-2-e5:
         condition: service_completed_successfully
 
 
   index-treccovid-4-e5:
-    build: ./index-ir_datasets-E5/
+    build: ./index-ir_datasets-e5/
     volumes:
       - ../data:/data
     deploy:
@@ -58,7 +58,7 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-    command: ["--dataset_name=cord19/trec-covid/round4", "--save=1000"]
+    command: ["--dataset=cord19/trec-covid/round4", "--save=1000"]
     depends_on:   
       index-treccovid-3-e5:
         condition: service_completed_successfully
@@ -66,7 +66,7 @@ services:
 
 
   index-treccovid-5-e5:
-    build: ./index-ir_datasets-E5/
+    build: ./index-ir_datasets-e5/
     volumes:
       - ../data:/data
     deploy:
@@ -76,7 +76,7 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-    command: ["--dataset_name=cord19/trec-covid/round5", "--save=1000"]
+    command: ["--dataset=cord19/trec-covid/round5", "--save=1000"]
     depends_on:   
       index-treccovid-4-e5:
         condition: service_completed_successfully
@@ -84,7 +84,7 @@ services:
 
   # LongEval
   index-longeval-wt-e5:
-    build: ./index-longeval-E5/
+    build: ./index-longeval-e5/
     volumes:
       - ../data:/data
     deploy:
@@ -94,14 +94,14 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-    command: ["--dataset_name=longeval-WT", "--save=1000"]
+    command: ["--dataset=longeval-WT", "--save=1000"]
     depends_on:   
       index-longeval-wt-e5:
         condition: service_completed_successfully
 
 
   index-longeval-st-e5:
-    build: ./index-longeval-E5/
+    build: ./index-longeval-e5/
     volumes:
       - ../data:/data
     deploy:
@@ -111,14 +111,14 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-    command: ["--dataset_name=longeval-ST", "--save=1000"]
+    command: ["--dataset=longeval-ST", "--save=1000"]
     depends_on:   
       index-longeval-wt-e5:
         condition: service_completed_successfully
 
 
   index-longeval-lt-e5:
-    build: ./index-longeval-E5/
+    build: ./index-longeval-e5/
     volumes:
       - ../data:/data
     deploy:
@@ -128,7 +128,7 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-    command: ["--dataset_name=longeval-LT", "--save=1000"]
+    command: ["--dataset=longeval-LT", "--save=1000"]
     depends_on:   
       index-longeval-st-e5:
         condition: service_completed_successfully
@@ -136,7 +136,7 @@ services:
 
   # TripClick
   index-tripclick-t1-e5:
-    build: ./index-tripclick-E5/
+    build: ./index-tripclick-e5/
     volumes:
       - ../data:/data
     deploy:
@@ -146,14 +146,14 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-    command: ["--dataset_name=tripclick/test/head-t1", "--save=1000", "--batch_size=150"]
+    command: ["--dataset=tripclick/test/head-t1", "--save=1000", "--batch_size=150"]
     depends_on:   
       index-longeval-wt-e5:
         condition: service_completed_successfully
 
 
   index-tripclick-t2-e5:
-    build: ./index-tripclick-E5/
+    build: ./index-tripclick-e5/
     volumes:
       - ../data:/data
     deploy:
@@ -163,14 +163,14 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-    command: ["--dataset_name=tripclick/test/head-t2", "--save=1000", "--batch_size=150"]
+    command: ["--dataset=tripclick/test/head-t2", "--save=1000", "--batch_size=150"]
     depends_on:   
       index-tripclick-t1-e5:
         condition: service_completed_successfully
 
 
   index-tripclick-t3-e5:
-    build: ./index-tripclick-E5/
+    build: ./index-tripclick-e5/
     volumes:
       - ../data:/data
     deploy:
@@ -180,7 +180,7 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-    command: ["--dataset_name=tripclick/test/head-t3", "--save=1000", "--batch_size=150"]
+    command: ["--dataset=tripclick/test/head-t3", "--save=1000", "--batch_size=150"]
     depends_on:   
       index-tripclick-t2-e5:
         condition: service_completed_successfully

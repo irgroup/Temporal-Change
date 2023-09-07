@@ -12,8 +12,8 @@ from tqdm import tqdm
 from transformers import AutoModel, AutoTokenizer
 
 
-def fix_ir_dataset_naming(dataset_name):
-    return dataset_name.replace("/", "-")
+def fix_ir_dataset_naming(dataset):
+    return "-".join(dataset.split("/")[-2:])
 
 
 def load_model(model_name):
@@ -45,16 +45,8 @@ def calc_embeddings(texts, mode="passage"):
     return embeddings.detach().cpu()  # .numpy()
 
 
-def load_subcollection_patch_dict():
-    with open("tripclick-subcollections.json", "r") as f:
-        subcollection_patch_dict = json.load(f)
-    return subcollection_patch_dict
-
-
-def gen_docs(data, batch_size, field, subcollection):
+def gen_docs(data, batch_size, field):
     """Generate batches of documents from the WT collection. Creats a global dict of ids to doc ids."""
-    subcollection_patch_dict = load_subcollection_patch_dict()
-
     global c
     c = 0
     global ids
@@ -62,12 +54,6 @@ def gen_docs(data, batch_size, field, subcollection):
     batch = []
 
     for item in data:
-        item_subcollection = subcollection_patch_dict.get(item.doc_id)
-
-        if int(item_subcollection[1]) > int(subcollection[1]):
-            print(f"Skipping {item.doc_id}")
-            continue
-
         if len(batch) == batch_size:
             full_batch = batch
             batch = []
@@ -82,29 +68,7 @@ def gen_docs(data, batch_size, field, subcollection):
         yield batch
 
 
-def gen_queries(data, batch_size):       
-    global c
-    c = 0
-    global ids
-    ids = {}
-    batch = []
-
-    for item in data:
-        if len(batch) == batch_size:
-            full_batch = batch
-            batch = []
-            batch.append(item.default_text())
-            yield full_batch
-        else:
-            batch.append(item.default_text())
-
-        ids[c] = item.query_id
-        c += 1
-    if batch:
-        yield batch
-
-
-def encode(data, index_path, batch_size, num_docs, save_every, mode, stop_at):
+def encode(data, index_path, batch_size, num_docs, save_every, mode, stop_at=0):
     """create embeddings for docs in batches and save in batches"""
     print("Start encoding...")
 
@@ -143,6 +107,7 @@ def encode(data, index_path, batch_size, num_docs, save_every, mode, stop_at):
 
 # load index
 def create_index(index_dir, size=768):
+    """create index from embedding parts"""
     print("Creating index...")
     files = os.listdir(index_dir)
     files.sort()  # TODO sorting fails, to leading 0
@@ -156,30 +121,27 @@ def create_index(index_dir, size=768):
 
 
 def index(
-    dataset_name, index_document_path, index_query_path, model_name, batch_size, save, earty_stop
+    dataset, index_document_path, index_query_path, model_name, batch_size, save
 ):
     load_model(model_name)
-    dataset_name, subcollection = dataset_name.split("-")
-    dataset = ir_datasets.load(dataset_name)
+    dataset = ir_datasets.load(dataset)
 
     encode(
-        data=gen_docs(dataset.docs_iter(), batch_size=batch_size, field="doc", subcollection=subcollection),
+        data=gen_docs(dataset.docs_iter(), batch_size=batch_size, field="doc"),
         index_path=index_document_path,
         batch_size=batch_size,
         num_docs=dataset.docs_count(),
         mode="passage",
         save_every=save,
-        stop_at=earty_stop,
     )
 
     encode(
-        data=gen_queries(dataset.queries_iter(), batch_size=batch_size),
+        data=gen_docs(dataset.queries_iter(), batch_size=batch_size, field="query"),
         index_path=index_query_path,
         batch_size=batch_size,
         num_docs=dataset.queries_count(),
         save_every=save,
         mode="query",
-        stop_at=earty_stop,
     )
 
     print("Done with encodng, start indexing...")

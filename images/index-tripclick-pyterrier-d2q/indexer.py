@@ -16,11 +16,11 @@ TOPIC_BASE = """<top>
 <title>{title}</title>
 </top>\n\n"""
 
-def fix_ir_dataset_naming(dataset_name):
-    return dataset_name.replace("/", "-")
+def fix_ir_dataset_naming(dataset):
+    return dataset.replace("/", "-")
 
-def move_queries(dataset_name, index_query_path):
-    dataset = ir_datasets.load(dataset_name)
+def move_queries(dataset, index_query_path):
+    dataset = ir_datasets.load(dataset)
 
     with open(f"{index_query_path}/queries.trec", "w") as f:
         for query in dataset.queries_iter():
@@ -34,10 +34,10 @@ def load_subcollection_patch_dict():
     return subcollection_patch_dict
 
 
-def gen_docs(dataset_name, subcollection):
+def gen_docs(dataset, subcollection):
     subcollection_patch_dict = load_subcollection_patch_dict()
 
-    dataset = ir_datasets.load(dataset_name)
+    dataset = ir_datasets.load(dataset)
 
     for doc in dataset.docs_iter():
         item_subcollection = subcollection_patch_dict.get(doc.doc_id, "000")  # if no metadata, return 0 so it will allways be indexed.
@@ -48,9 +48,9 @@ def gen_docs(dataset_name, subcollection):
         yield {"docno": doc.doc_id, "text": doc.default_text()}
 
 
-def index(dataset_name, index_document_path, index_query_path, batch_size, num_samples):
-    dataset_name, subcollection = dataset_name.split("-")
-    move_queries(dataset_name, index_query_path)
+def index(dataset, index_document_path, index_query_path, batch_size, num_samples):
+    dataset, subcollection = dataset.split("-")
+    move_queries(dataset, index_query_path)
     
     doc2query = pyterrier_doc2query.Doc2Query(batch_size=batch_size, append=True, num_samples=num_samples, verbose=True, fast_tokenizer=True)
 
@@ -63,7 +63,7 @@ def index(dataset_name, index_document_path, index_query_path, batch_size, num_s
     
     pipeline = doc2query >> indexer
 
-    indexref = pipeline.index(gen_docs(dataset_name, subcollection))
+    indexref = pipeline.index(gen_docs(dataset, subcollection))
     
     index = pt.IndexFactory.of(indexref)
     print("Indexing done\n_________________________________")

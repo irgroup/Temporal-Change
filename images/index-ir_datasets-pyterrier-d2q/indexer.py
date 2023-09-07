@@ -12,21 +12,21 @@ TOPIC_BASE = """<top>
 <title>{title}</title>
 </top>\n\n"""
 
-def fix_ir_dataset_naming(dataset_name):
-    return "-".join(dataset_name.split("/")[-2:])
+def fix_ir_dataset_naming(dataset):
+    return "-".join(dataset.split("/")[-2:])
 
 
-def move_queries(dataset_name, index_query_path):
-    dataset = ir_datasets.load(dataset_name)
+def move_queries(dataset, index_query_path):
+    dataset = ir_datasets.load(dataset)
 
     with open(f"{index_query_path}/queries.trec", "w") as f:
         for topic in dataset.queries_iter():
             f.write(TOPIC_BASE.format(id=topic.query_id, title=topic.title))
 
 
-def docs_generator(dataset_name):
+def docs_generator(dataset):
     ids = []
-    dataset = ir_datasets.load(dataset_name)
+    dataset = ir_datasets.load(dataset)
     for doc in dataset.docs_iter():
         if doc.doc_id in ids:
             continue
@@ -34,8 +34,8 @@ def docs_generator(dataset_name):
         yield {"docno": doc.doc_id, "text": doc.default_text()}
 
 
-def index(dataset_name, index_document_path, index_query_path, batch_size, num_samples):
-    move_queries(dataset_name, index_query_path)
+def index(dataset, index_document_path, index_query_path, batch_size, num_samples):
+    move_queries(dataset, index_query_path)
     
     doc2query = pyterrier_doc2query.Doc2Query(batch_size=batch_size, append=True, num_samples=num_samples, verbose=True, fast_tokenizer=True)
 
@@ -48,7 +48,7 @@ def index(dataset_name, index_document_path, index_query_path, batch_size, num_s
     
     pipeline = doc2query >> indexer
 
-    indexref = pipeline.index(docs_generator(dataset_name))
+    indexref = pipeline.index(docs_generator(dataset))
     
     index = pt.IndexFactory.of(indexref)
     print("Indexing done\n_________________________________")

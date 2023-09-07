@@ -23,13 +23,13 @@ def setup_index_dir(artefact_name):
     os.makedirs(f"/IRLab/index/index-{artefact_name}-{METHOD}/queries")
 
 
-def fix_ir_dataset_naming(dataset_name):
-    return "-".join(dataset_name.split("/")[-2:])
+def fix_ir_dataset_naming(dataset):
+    return "-".join(dataset.split("/")[-2:])
 
 
-def docs_generator(dataset_name):
+def docs_generator(dataset):
     ids = []
-    dataset = ir_datasets.load(dataset_name)
+    dataset = ir_datasets.load(dataset)
     for doc in dataset.docs_iter():
         if doc.doc_id in ids:
             continue
@@ -41,24 +41,24 @@ def docs_generator(dataset_name):
 ##### END #####
 
 
-def index(dataset_name):
+def index(dataset):
     pass    
 
 
 def main():
     parser = ArgumentParser(description="")
     parser.add_argument(
-        "--dataset_name", help="Name or path to the dataset to be processed", required=True
+        "--dataset", help="Name or path to the dataset to be processed", required=True
     )
     args = parser.parse_args()
 
 
-    if check_artefact_exist(args.dataset_name):
-        print(f"Dataset {args.dataset_name} already indexed!")
+    if check_artefact_exist(args.dataset):
+        print(f"Dataset {args.dataset} already indexed!")
         return None
 
-    setup_index_dir(args.dataset_name)
-    index(args.dataset_name)
+    setup_index_dir(args.dataset)
+    index(args.dataset)
     
 
 if __name__ == "__main__":
