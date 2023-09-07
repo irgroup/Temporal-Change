@@ -1,0 +1,3 @@
+ir_datasets
+git+https://github.com/terrierteam/pyterrier_doc2query.git
+protobuf~=3.19.0

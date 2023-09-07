@@ -1,0 +1,8 @@
+services:
+
+  # Trec-Covid
+  system-bm25-trec-covid-t1:
+    build: ./system-rrf-ranx/
+    volumes:
+      - ../data:/data
+    command: ["--index", "/data/run/run-trec-covid-round1-queries-bm25-pyterrier", "data/run/run-trec-covid-round1-queries-pl2-pyterrier"]

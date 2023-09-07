@@ -1,0 +1,101 @@
+services:
+  # TripClick
+  system-bm25-monot5-tripclick-t1:
+    build: ./system-bm25+monot5-pyterrier/
+    volumes:
+      - ../data:/data
+    command: ["--index=/data/index/index-tripclick-test-head-t1-pyterrier/documents", --batch_size=1, --batch_size=1]
+
+  system-bm25-monot5-tripclick-t2:
+    build: ./system-bm25+monot5-pyterrier/
+    volumes:
+      - ../data:/data
+    command: ["--index=/data/index/index-tripclick-test-head-t2-pyterrier/documents", --batch_size=1]
+    depends_on:   
+      system-bm25-monot5-tripclick-t1:
+        condition: service_completed_successfully
+
+  system-bm25-monot5-tripclick-t3:
+    build: ./system-bm25+monot5-pyterrier/
+    volumes:
+      - ../data:/data
+    command: ["--index=/data/index/index-tripclick-test-head-t3-pyterrier/documents", --batch_size=1]
+    depends_on:   
+      system-bm25-monot5-tripclick-t2:
+        condition: service_completed_successfully
+
+
+  # Trec-Covid
+  system-bm25-monot5-trec-covid-t1:
+    build: ./system-bm25+monot5-pyterrier/
+    volumes:
+      - ../data:/data
+    command: ["--index=/data/index/index-trec-covid-round1-pyterrier/documents", --batch_size=1]
+    depends_on:   
+      system-bm25-monot5-tripclick-t3:
+        condition: service_completed_successfully
+
+  system-bm25-monot5-trec-covid-t2:
+    build: ./system-bm25+monot5-pyterrier/
+    volumes:
+      - ../data:/data
+    command: ["--index=/data/index/index-trec-covid-round2-pyterrier/documents", --batch_size=1]
+    depends_on:   
+      system-bm25-monot5-trec-covid-t1:
+        condition: service_completed_successfully
+
+  system-bm25-monot5-trec-covid-t3:
+    build: ./system-bm25+monot5-pyterrier/
+    volumes:
+      - ../data:/data
+    command: ["--index=/data/index/index-trec-covid-round3-pyterrier/documents", --batch_size=1]
+    depends_on:   
+      system-bm25-monot5-trec-covid-t2:
+        condition: service_completed_successfully
+
+  system-bm25-monot5-trec-covid-t4:
+    build: ./system-bm25+monot5-pyterrier/
+    volumes:
+      - ../data:/data
+    command: ["--index=/data/index/index-trec-covid-round4-pyterrier/documents", --batch_size=1]
+    depends_on:   
+      system-bm25-monot5-trec-covid-t3:
+        condition: service_completed_successfully
+
+  system-bm25-monot5-trec-covid-t5:
+    build: ./system-bm25+monot5-pyterrier/
+    volumes:
+      - ../data:/data
+    command: ["--index=/data/index/index-trec-covid-round5-pyterrier/documents", --batch_size=1]
+    depends_on:   
+      system-bm25-monot5-trec-covid-t4:
+        condition: service_completed_successfully
+      
+
+  # LongEval
+  system-bm25-monot5-longeval-wt:
+    build: ./system-bm25+monot5-pyterrier/
+    volumes:
+      - ../data:/data
+    command: ["--index=/data/index/index-longeval-WT-pyterrier/documents", "--queries=/data/index/index-longeval-WT-pyterrier/queries/test.trec", --batch_size=1]
+    depends_on:   
+      system-bm25-monot5-trec-covid-t5:
+        condition: service_completed_successfully
+
+  system-bm25-monot5-longeval-st:
+    build: ./system-bm25+monot5-pyterrier/
+    volumes:
+      - ../data:/data
+    command: ["--index=/data/index/index-longeval-ST-pyterrier/documents", "--queries=/data/index/index-longeval-ST-pyterrier/queries/test.trec", --batch_size=1]
+    depends_on:   
+      system-bm25-monot5-longeval-wt:
+        condition: service_completed_successfully
+
+  system-bm25-monot5-longeval-lt:
+    build: ./system-bm25+monot5-pyterrier/
+    volumes:
+      - ../data:/data
+    command: ["--index=/data/index/index-longeval-LT-pyterrier/documents", "--queries=/data/index/index-longeval-LT-pyterrier/queries/test.trec", --batch_size=1]
+    depends_on:   
+      system-bm25-monot5-longeval-st:
+        condition: service_completed_successfully

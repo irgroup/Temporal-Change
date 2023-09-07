@@ -1,0 +1,4 @@
+faiss-gpu==1.6.3
+transformers==4.28.1
+pandas
+ir_datasets

@@ -1,0 +1,186 @@
+services:
+  index-treccovid-1-d2q:
+    build: ./index-ir_datasets-pyterrier-d2q/
+    volumes:
+      - ../data:/data
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    command: ["--dataset_name=cord19/trec-covid/round1"]
+
+
+  index-treccovid-2-d2q:
+    build: ./index-ir_datasets-pyterrier-d2q/
+    volumes:
+      - ../data:/data
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    command: ["--dataset_name=cord19/trec-covid/round2"]
+    depends_on:   
+      index-treccovid-1-d2q:
+        condition: service_completed_successfully
+
+
+  index-treccovid-3-d2q:
+    build: ./index-ir_datasets-pyterrier-d2q/
+    volumes:
+      - ../data:/data
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    command: ["--dataset_name=cord19/trec-covid/round3"]
+    depends_on:   
+      index-treccovid-2-d2q:
+        condition: service_completed_successfully
+
+
+  index-treccovid-4-d2q:
+    build: ./index-ir_datasets-pyterrier-d2q/
+    volumes:
+      - ../data:/data
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    command: ["--dataset_name=cord19/trec-covid/round4"]
+    depends_on:   
+      index-treccovid-3-d2q:
+        condition: service_completed_successfully
+
+
+
+  index-treccovid-5-d2q:
+    build: ./index-ir_datasets-pyterrier-d2q/
+    volumes:
+      - ../data:/data
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    command: ["--dataset_name=cord19/trec-covid/round5"]
+    depends_on:   
+      index-treccovid-4-d2q:
+        condition: service_completed_successfully
+
+
+  # LongEval
+  index-longeval-wt-d2q:
+    build: ./index-longeval-pyterrier-d2q/
+    volumes:
+      - ../data:/data
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    command: ["--dataset_name=longeval-WT"]
+    depends_on:   
+      index-longeval-wt-d2q:
+        condition: service_completed_successfully
+
+
+  index-longeval-st-d2q:
+    build: ./index-longeval-pyterrier-d2q/
+    volumes:
+      - ../data:/data
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    command: ["--dataset_name=longeval-ST"]
+    depends_on:   
+      index-longeval-wt-d2q:
+        condition: service_completed_successfully
+
+
+  index-longeval-lt-d2q:
+    build: ./index-longeval-pyterrier-d2q/
+    volumes:
+      - ../data:/data
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    command: ["--dataset_name=longeval-LT"]
+    depends_on:   
+      index-longeval-st-d2q:
+        condition: service_completed_successfully
+
+
+  # # TripClick
+  index-tripclick-t1-d2q:
+    build: ./index-tripclick-pyterrier-d2q/
+    volumes:
+      - ../data:/data
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    command: ["--dataset_name=tripclick/test/head-t1"]
+    depends_on:   
+      index-longeval-wt-d2q:
+        condition: service_completed_successfully
+
+
+  index-tripclick-t2-d2q:
+    build: ./index-tripclick-pyterrier-d2q/
+    volumes:
+      - ../data:/data
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    command: ["--dataset_name=tripclick/test/head-t2"]
+    depends_on:   
+      index-tripclick-t1-d2q:
+        condition: service_completed_successfully
+
+
+  index-tripclick-t3-d2q:
+    build: ./index-tripclick-pyterrier-d2q/
+    volumes:
+      - ../data:/data
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    command: ["--dataset_name=tripclick/test/head-t3"]
+    depends_on:   
+      index-tripclick-t2-d2q:
+        condition: service_completed_successfully

@@ -1,0 +1,96 @@
+services:
+  # TripClick
+  index-tripclick-t1-pyterrier:
+    build: ./index-tripclick-pyterrier/
+    volumes:
+      - ../data:/data
+    command: "--dataset_name=tripclick/test/head-t1"
+
+  index-tripclick-t2-pyterrier:
+    build: ./index-tripclick-pyterrier/
+    volumes:
+      - ../data:/data
+    command: "--dataset_name=tripclick/test/head-t2"
+    depends_on:   
+      index-tripclick-t1-pyterrier:
+        condition: service_completed_successfully
+
+  index-tripclick-t3-pyterrier:
+    build: ./index-tripclick-pyterrier/
+    volumes:
+      - ../data:/data
+    command: "--dataset_name=tripclick/test/head-t3"
+    depends_on:   
+      index-tripclick-t2-pyterrier:
+        condition: service_completed_successfully
+
+  # # LongEval
+  index-longeval-wt-pyterrier:
+    build: ./index-longeval-pyterrier/
+    volumes:
+      - ../data:/data
+    command: "--dataset_name=longeval-WT"
+
+  index-longeval-st-pyterrier:
+    build: ./index-longeval-pyterrier/
+    volumes:
+      - ../data:/data
+    command: "--dataset_name=longeval-ST"
+    depends_on:   
+      index-longeval-wt-pyterrier:
+        condition: service_completed_successfully
+
+
+  index-longeval-lt-pyterrier:
+    build: ./index-longeval-pyterrier/
+    volumes:
+      - ../data:/data
+    command: "--dataset_name=longeval-LT"
+    depends_on:   
+      index-longeval-st-pyterrier:
+        condition: service_completed_successfully
+
+  # TREC-COVID
+  index-treccovid-1-pyterrier:
+    build: ./index-ir_datasets-pyterrier/
+    volumes:
+      - ../data:/data
+    command: "--dataset_name=cord19/trec-covid/round1"
+
+  index-treccovid-2-pyterrier:
+    build: ./index-ir_datasets-pyterrier/
+    volumes:
+      - ../data:/data
+    command: "--dataset_name=cord19/trec-covid/round2"
+    depends_on:   
+      index-treccovid-1-pyterrier:
+        condition: service_completed_successfully
+
+  index-treccovid-3-pyterrier:
+    build: ./index-ir_datasets-pyterrier/
+    volumes:
+      - ../data:/data
+    command: "--dataset_name=cord19/trec-covid/round3"
+    depends_on:   
+      index-treccovid-2-pyterrier:
+        condition: service_completed_successfully
+
+  index-treccovid-4-pyterrier:
+    build: ./index-ir_datasets-pyterrier/
+    volumes:
+      - ../data:/data
+    command: "--dataset_name=cord19/trec-covid/round4"
+    depends_on:   
+      index-treccovid-3-pyterrier:
+        condition: service_completed_successfully
+
+  index-treccovid-5-pyterrier:
+    build: ./index-ir_datasets-pyterrier/
+    volumes:
+      - ../data:/data
+    command: "--dataset_name=cord19/trec-covid/round5"
+    depends_on:   
+      index-treccovid-4-pyterrier:
+        condition: service_completed_successfully
+
+

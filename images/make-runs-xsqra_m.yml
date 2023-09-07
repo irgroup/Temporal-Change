@@ -1,0 +1,95 @@
+services:
+  # TripClick
+  system-xsqra_m-tripclick-t1:
+    build: ./system-xsqra_m-pyterrier/
+    volumes:
+      - ../data:/data
+    command: "--index=/data/index/index-tripclick-t1-pyterrier/documents/ --queries=/data/index/index-tripclick-t1-pyterrier/queries/head-test.trec"
+
+  system-xsqra_m-tripclick-t2:
+    build: ./system-xsqra_m-pyterrier/
+    volumes:
+      - ../data:/data
+    command: "--index=/data/index/index-tripclick-t2-pyterrier/documents/ --queries=/data/index/index-tripclick-t2-pyterrier/queries/head-test.trec"
+    depends_on:   
+      system-xsqra_m-tripclick-t1:
+        condition: service_completed_successfully
+
+  system-xsqra_m-tripclick-t3:
+    build: ./system-xsqra_m-pyterrier/
+    volumes:
+      - ../data:/data
+    command: "--index=/data/index/index-tripclick-t3-pyterrier/documents/ --queries=/data/index/index-tripclick-t2-pyterrier/queries/head-test.trec"
+    depends_on:   
+      system-xsqra_m-tripclick-t2:
+        condition: service_completed_successfully
+
+
+  # Trec-Covid
+  system-xsqra_m-trec-covid-t1:
+    build: ./system-xsqra_m-pyterrier/
+    volumes:
+      - ../data:/data
+    command: "--index=/data/index/index-trec-covid-round1-pyterrier/documents --queries=/data/index/index-trec-covid-round1-pyterrier/queries/queries.trec"
+
+  system-xsqra_m-trec-covid-t2:
+    build: ./system-xsqra_m-pyterrier/
+    volumes:
+      - ../data:/data
+    command: "--index=/data/index/index-trec-covid-round2-pyterrier/documents --queries=/data/index/index-trec-covid-round2-pyterrier/queries/queries.trec"
+    depends_on:   
+      system-xsqra_m-trec-covid-t1:
+        condition: service_completed_successfully
+
+  system-xsqra_m-trec-covid-t3:
+    build: ./system-xsqra_m-pyterrier/
+    volumes:
+      - ../data:/data
+    command: "--index=/data/index/index-trec-covid-round3-pyterrier/documents --queries=/data/index/index-trec-covid-round3-pyterrier/queries/queries.trec"
+    depends_on:   
+      system-xsqra_m-trec-covid-t2:
+        condition: service_completed_successfully
+
+  system-xsqra_m-trec-covid-t4:
+    build: ./system-xsqra_m-pyterrier/
+    volumes:
+      - ../data:/data
+    command: "--index=/data/index/index-trec-covid-round4-pyterrier/documents --queries=/data/index/index-trec-covid-round4-pyterrier/queries/queries.trec"
+    depends_on:   
+      system-xsqra_m-trec-covid-t3:
+        condition: service_completed_successfully
+
+  system-xsqra_m-trec-covid-t5:
+    build: ./system-xsqra_m-pyterrier/
+    volumes:
+      - ../data:/data
+    command: "--index=/data/index/index-trec-covid-round5-pyterrier/documents --queries=/data/index/index-trec-covid-round5-pyterrier/queries/queries.trec"
+    depends_on:   
+      system-xsqra_m-trec-covid-t4:
+        condition: service_completed_successfully
+      
+
+  # LongEval
+  system-xsqra_m-longeval-wt:
+    build: ./system-xsqra_m-pyterrier/
+    volumes:
+      - ../data:/data
+    command: "--index=/data/index/index-longeval-WT-pyterrier/documents --queries=/data/index/index-longeval-WT-pyterrier/queries/test.trec"
+
+  system-xsqra_m-longeval-st:
+    build: ./system-xsqra_m-pyterrier/
+    volumes:
+      - ../data:/data
+    command: "--index=/data/index/index-longeval-ST-pyterrier/documents --queries=/data/index/index-longeval-ST-pyterrier/queries/test.trec"
+    depends_on:   
+      system-xsqra_m-longeval-wt:
+        condition: service_completed_successfully
+
+  system-xsqra_m-longeval-lt:
+    build: ./system-xsqra_m-pyterrier/
+    volumes:
+      - ../data:/data
+    command: "--index=/data/index/index-longeval-LT-pyterrier/documents --queries=/data/index/index-longeval-LT-pyterrier/queries/test.trec"
+    depends_on:   
+      system-xsqra_m-longeval-st:
+        condition: service_completed_successfully
