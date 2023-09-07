@@ -23,12 +23,6 @@ def main():
         "--index", help="Name or path to the dataset to be processed", required=True)
     parser.add_argument(
         "--queries", help="Name of the query file", required=False)
-    parser.add_argument(
-        "--batch_size",
-        type=int,
-        default=8,
-        help="Batch size for encoding",
-    )
 
     args = parser.parse_args()
     
@@ -37,7 +31,7 @@ def main():
 
     result_path = run_path(args.index, args.queries)
 
-    rank(args.index, args.queries, result_path, args.batch_size)
+    rank(args.index, args.queries, result_path)
 
 if __name__ == "__main__":
     main()

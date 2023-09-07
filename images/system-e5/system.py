@@ -19,6 +19,7 @@ def load_index(index_dir):
     with open(index_dir+"/ids.json", "r") as file:
         index_ids = json.load(file)
 
+    assert index.ntotal == len(index_ids), "Index: embedding and ids len offsett"
     return index, index_ids
 
 
@@ -34,39 +35,26 @@ def load_queries(queries_dir):
     with open(queries_dir+"/ids.json", "r") as file:
         querie_ids = json.load(file)
 
-    return np.concat(queries), querie_ids
+    queries = np.concatenate(queries)
+    assert len(queries) == len(querie_ids), "Queries: embedding and ids len offsett"
+    return queries, querie_ids
 
 
-def write_run(run_tag, topics, I, D, querie_ids, index_ids):
-    with open("results/trec/"+run_tag, "w") as f:
-        for qid, query, results in zip(topics["qid"].to_list(), I, D):
-            for rank, (doc_id, distance) in enumerate(zip(query, results)):
-                docno = index_ids[str(doc_id)]
-                f.write(f"{qid} Q0 {docno} {rank} {100-distance}".format())
+def write_run(I, D, querie_ids, index_ids, result_path):
+
+    with open(result_path, "w") as f:
+        for qid, ranking_doc_ids_faiss, ranking_scores in zip(querie_ids.values(), I, D):
+            # for each query
+            for rank, (doc_ids_faiss, score) in enumerate(zip(ranking_doc_ids_faiss, ranking_scores)):
+                doc_id = index_ids[str(doc_ids_faiss)]
+                print(f"{qid} Q0 {doc_id} {rank} {100-score} E5")  # 100-score to map from distance (smaller better) to score, higher better
 
 
-
-def rank(index, queries, result, batch_size):
+def rank(index, queries, result_path):
 
     index, index_ids = load_index(index)
+    queries, querie_ids = load_queries(queries)
 
-    queries
+    D, I = index.search(queries, k = 1000)
 
-
-    D, I = index.search(query_embedding.numpy(), k = 1000)
-
-    write_run(run_tag, topics, I, D, index_ids)
-
-    index = pt.IndexFactory.of(index)
-    print(queries)
-    queries = pt.io.read_topics(queries)
-
-
-    bm25 = pt.BatchRetrieve(index, wmodel="BM25", verbose=True)
-
-    monoT5 = MonoT5ReRanker(verbose=True, batch_size=batch_size)
-
-    pipeline = bm25 >> pt.text.get_text(index, "text", by_query=True) >> monoT5
-    ranking = pipeline(queries)
-
-    pt.io.write_results(res=ranking, filename=result)
+    write_run(I, D, querie_ids, index_ids, result_path)
