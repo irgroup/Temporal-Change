@@ -83,12 +83,17 @@ def encode_queries(queries_path, index_query_path, dataset_slice, batch_size):
             query_embedding = calc_embeddings(batch, mode="query")
             embs.append(query_embedding)
             batch = []
+    if batch:
+        query_embedding = calc_embeddings(batch, mode="query")
+        embs.append(query_embedding)
 
     # save embs
     embs = torch.cat(embs)
+    assert len(embs) == len(ids), "Queries: embedding and ids len offsett" 
     torch.save(embs, f"{index_query_path}/e5_embeddings-{dataset_slice}.pt")
-    with open(f"{index_query_path}/e5_embeddings-{dataset_slice}-ids.json", "w") as f:
+    with open(f"{index_query_path}/ids.json", "w") as f:
         json.dump(ids, f)
+
     print(f"Done with encoding {dataset_slice} queries")
 
 
