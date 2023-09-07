@@ -40,7 +40,7 @@ def gen_docs(dataset_name, subcollection):
     dataset = ir_datasets.load(dataset_name)
 
     for doc in dataset.docs_iter():
-        item_subcollection = subcollection_patch_dict.get(doc.doc_id)
+        item_subcollection = subcollection_patch_dict.get(doc.doc_id, "0")  # if no metadata, return 0 so it will allways be indexed.
         if int(item_subcollection[1]) > int(subcollection[1]):
             print(f"Skipping {doc.doc_id}")
             continue
