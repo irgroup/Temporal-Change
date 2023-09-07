@@ -10,7 +10,7 @@ import yaml
 from torch import Tensor
 from tqdm import tqdm
 from transformers import AutoModel, AutoTokenizer
-
+import numpy as np
 
 def fix_ir_dataset_naming(dataset):
     return dataset.replace("/", "-")
@@ -60,10 +60,10 @@ def gen_docs(data, batch_size, field, subcollection):
     global ids
     ids = {}
     batch = []
-
     for item in data:
-        item_subcollection = subcollection_patch_dict.get(item.doc_id)
-
+        item_subcollection = subcollection_patch_dict.get(item.doc_id, "000")  # if no metadata, return 0 so it will allways be indexed.
+        if isinstance(item_subcollection, float) and np.isnan(item_subcollection):
+            item_subcollection = "000"
         if int(item_subcollection[1]) > int(subcollection[1]):
             print(f"Skipping {item.doc_id}")
             continue

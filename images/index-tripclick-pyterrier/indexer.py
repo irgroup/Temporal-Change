@@ -2,7 +2,7 @@ import os
 
 import ir_datasets
 import pyterrier as pt
-
+import numpy as np
 if not pt.started():
     pt.init()
 import json
@@ -40,7 +40,9 @@ def gen_docs(dataset, subcollection):
     dataset = ir_datasets.load(dataset)
 
     for doc in dataset.docs_iter():
-        item_subcollection = subcollection_patch_dict.get(doc.doc_id)
+        item_subcollection = subcollection_patch_dict.get(doc.doc_id, "000")  # if no metadata, return 0 so it will allways be indexed.
+        if isinstance(item_subcollection, float) and np.isnan(item_subcollection):  # some are nan
+            item_subcollection = "000"
         if int(item_subcollection[1]) > int(subcollection[1]):
             print(f"Skipping {doc.doc_id}")
             continue
