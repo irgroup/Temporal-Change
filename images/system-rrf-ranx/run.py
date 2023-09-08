@@ -14,7 +14,7 @@ def run_path(index):
     for path in index:
         system += run_system(path) + "-"
     system += ")"
-    return f"./data/run/run-{system}-{METHOD}"
+    return f"/data/run/run-{system}-{METHOD}"
 
 
 def main():

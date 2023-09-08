@@ -14,7 +14,7 @@ def query_name(query):
 def run_path(index, query):
     index = index_name(index)
     query = query_name(query)
-    return f"./data/run/run-{index}-{query}-{SYSTEM}-{METHOD}"
+    return f"/data/run/run-{index}-{query}-{SYSTEM}-{METHOD}"
 
 
 def main():

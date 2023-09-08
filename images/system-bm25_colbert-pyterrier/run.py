@@ -14,7 +14,7 @@ def query_name(query):
 def run_path(index, query):
     index = index_name(index)
     query = query_name(query)
-    return f"./data/run/run-{index}-{query}-{SYSTEM}-{METHOD}"
+    return f"/data/run/run-{index}-{query}-{SYSTEM}-{METHOD}"
 
 
 def main():
@@ -23,12 +23,17 @@ def main():
         "--index", help="Name or path to the dataset to be processed", required=True)
     parser.add_argument(
         "--queries", help="Name of the query file", required=False, default="queries")
-    
+    parser.add_argument(
+        "--model_path",
+        default="/data/models/colbert.dnn",
+        help="Path to colBERT model (`colbert.dnn`)",
+    )
+
     args = parser.parse_args()
 
     result_path = run_path(args.index, args.queries)
-
-    rank(args.index, args.queries, result_path)
+    
+    rank(args.index, args.queries, result_path, args.model_path)
 
 if __name__ == "__main__":
     main()

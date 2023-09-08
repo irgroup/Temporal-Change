@@ -1,25 +1,25 @@
 services:
   # TripClick
   system-pl2-tripclick-t1:
-    build: ./system-pl2-pyterrier/
+    image: "system-pl2-pyterrier:0.0.1"
     volumes:
       - ../data:/data
-    command: "--index=/data/index/index-tripclick-t1-pyterrier/documents/ --queries=/data/index/index-tripclick-t1-pyterrier/queries/head-test.trec"
+    command: "--index=/data/index/index-tripclick-test-head-t1-pyterrier/documents/ --queries=/data/index/index-tripclick-test-head-t1-pyterrier/queries/queries.trec"
 
   system-pl2-tripclick-t2:
-    build: ./system-pl2-pyterrier/
+    image: "system-pl2-pyterrier:0.0.1"
     volumes:
       - ../data:/data
-    command: "--index=/data/index/index-tripclick-t2-pyterrier/documents/ --queries=/data/index/index-tripclick-t2-pyterrier/queries/head-test.trec"
+    command: "--index=/data/index/index-tripclick-test-head-t2-pyterrier/documents/ --queries=/data/index/index-tripclick-test-head-t2-pyterrier/queries/queries.trec"
     depends_on:   
       system-pl2-tripclick-t1:
         condition: service_completed_successfully
 
   system-pl2-tripclick-t3:
-    build: ./system-pl2-pyterrier/
+    image: "system-pl2-pyterrier:0.0.1"
     volumes:
       - ../data:/data
-    command: "--index=/data/index/index-tripclick-t3-pyterrier/documents/ --queries=/data/index/index-tripclick-t2-pyterrier/queries/head-test.trec"
+    command: "--index=/data/index/index-tripclick-test-head-t3-pyterrier/documents/ --queries=/data/index/index-tripclick-test-head-t3-pyterrier/queries/queries.trec"
     depends_on:   
       system-pl2-tripclick-t2:
         condition: service_completed_successfully
@@ -27,13 +27,13 @@ services:
 
   # Trec-Covid
   system-pl2-trec-covid-t1:
-    build: ./system-pl2-pyterrier/
+    image: "system-pl2-pyterrier:0.0.1"
     volumes:
       - ../data:/data
     command: "--index=/data/index/index-trec-covid-round1-pyterrier/documents --queries=/data/index/index-trec-covid-round1-pyterrier/queries/queries.trec"
 
   system-pl2-trec-covid-t2:
-    build: ./system-pl2-pyterrier/
+    image: "system-pl2-pyterrier:0.0.1"
     volumes:
       - ../data:/data
     command: "--index=/data/index/index-trec-covid-round2-pyterrier/documents --queries=/data/index/index-trec-covid-round2-pyterrier/queries/queries.trec"
@@ -42,7 +42,7 @@ services:
         condition: service_completed_successfully
 
   system-pl2-trec-covid-t3:
-    build: ./system-pl2-pyterrier/
+    image: "system-pl2-pyterrier:0.0.1"
     volumes:
       - ../data:/data
     command: "--index=/data/index/index-trec-covid-round3-pyterrier/documents --queries=/data/index/index-trec-covid-round3-pyterrier/queries/queries.trec"
@@ -51,7 +51,7 @@ services:
         condition: service_completed_successfully
 
   system-pl2-trec-covid-t4:
-    build: ./system-pl2-pyterrier/
+    image: "system-pl2-pyterrier:0.0.1"
     volumes:
       - ../data:/data
     command: "--index=/data/index/index-trec-covid-round4-pyterrier/documents --queries=/data/index/index-trec-covid-round4-pyterrier/queries/queries.trec"
@@ -60,7 +60,7 @@ services:
         condition: service_completed_successfully
 
   system-pl2-trec-covid-t5:
-    build: ./system-pl2-pyterrier/
+    image: "system-pl2-pyterrier:0.0.1"
     volumes:
       - ../data:/data
     command: "--index=/data/index/index-trec-covid-round5-pyterrier/documents --queries=/data/index/index-trec-covid-round5-pyterrier/queries/queries.trec"
@@ -71,13 +71,13 @@ services:
 
   # LongEval
   system-pl2-longeval-wt:
-    build: ./system-pl2-pyterrier/
+    image: "system-pl2-pyterrier:0.0.1"
     volumes:
       - ../data:/data
     command: "--index=/data/index/index-longeval-WT-pyterrier/documents --queries=/data/index/index-longeval-WT-pyterrier/queries/test.trec"
 
   system-pl2-longeval-st:
-    build: ./system-pl2-pyterrier/
+    image: "system-pl2-pyterrier:0.0.1"
     volumes:
       - ../data:/data
     command: "--index=/data/index/index-longeval-ST-pyterrier/documents --queries=/data/index/index-longeval-ST-pyterrier/queries/test.trec"
@@ -86,10 +86,19 @@ services:
         condition: service_completed_successfully
 
   system-pl2-longeval-lt:
-    build: ./system-pl2-pyterrier/
+    image: "system-pl2-pyterrier:0.0.1"
     volumes:
       - ../data:/data
     command: "--index=/data/index/index-longeval-LT-pyterrier/documents --queries=/data/index/index-longeval-LT-pyterrier/queries/test.trec"
     depends_on:   
       system-pl2-longeval-st:
+        condition: service_completed_successfully
+
+  system-pl2-longeval-wt-train:
+    image: "system-pl2-pyterrier:0.0.1"
+    volumes:
+      - ../data:/data
+    command: "--index=/data/index/index-longeval-WT-pyterrier/documents --queries=/data/index/index-longeval-WT-pyterrier/queries/train.trec"
+    depends_on:   
+      system-pl2-longeval-lt:
         condition: service_completed_successfully

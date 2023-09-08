@@ -14,7 +14,7 @@ def query_name(query):
 def run_path(index, query):
     index = index_name(index)
     query = query_name(query)
-    return f"./data/run/run-{index}-{query}-{SYSTEM}-{METHOD}"
+    return f"/data/run/run-{index}-{query}-{SYSTEM}-{METHOD}"
 
 
 def main():
@@ -22,22 +22,13 @@ def main():
     parser.add_argument(
         "--index", help="Name or path to the dataset to be processed", required=True)
     parser.add_argument(
-        "--queries", help="Name of the query file", required=False)
-    parser.add_argument(
-        "--batch_size",
-        type=int,
-        default=8,
-        help="Batch size for encoding",
-    )
-
-    args = parser.parse_args()
+        "--queries", help="Name of the query file", required=False, default="queries")
     
-    if not args.queries:
-        args.queries = args.index.replace("documents", "queries/queries.trec")
+    args = parser.parse_args()
 
     result_path = run_path(args.index, args.queries)
 
-    rank(args.index, args.queries, result_path, args.batch_size)
+    rank(args.index, args.queries, result_path)
 
 if __name__ == "__main__":
     main()
