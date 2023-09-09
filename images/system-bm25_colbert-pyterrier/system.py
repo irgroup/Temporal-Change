@@ -1,10 +1,11 @@
 import pyterrier as pt
-from pyterrier_colbert.ranking import ColBERTFactory
 from tqdm import tqdm
 import json
 import os
 if not pt.started():
     pt.init()
+from pyterrier_colbert.ranking import ColBERTFactory
+
 
 
 def rank(index, queries, result, model_path):
