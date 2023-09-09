@@ -15,7 +15,7 @@ COPY . .
 RUN pip install -r requirements.txt
 
 ENV TYPE='system'
-ENV SYSTEM='bm25+monot5'
+ENV SYSTEM='bm25+colbert'
 ENV METHOD='pyterrier'
 
 ENV PYTHONUNBUFFERED=1
