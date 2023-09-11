@@ -28,7 +28,7 @@ def get_documents_path(dataset):
     if subcollection == "LT":
         return "/data/dataset/LongEval/test-collection/B-Long-September/English/Documents/Trec/"
     elif subcollection == "ST":
-        return "/data/dataset/LongEval/test-collection/B-Long-September/English/Documents/Trec/"
+        return "/data/dataset/LongEval/test-collection/A-Short-July/English/Documents/Trec/"
     elif subcollection == "WT":
         return "/data/dataset/LongEval/publish/English/Documents/Trec/"
 
