@@ -24,6 +24,8 @@ def run_path(index, query):
 def resolve_queries(index, queries):
     if queries == "queries":
         return index.replace("/documents", "/queries/queries.trec")
+    else:
+        return queries
 
 
 def main():
