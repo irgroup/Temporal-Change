@@ -6,7 +6,7 @@ SYSTEM = os.getenv("SYSTEM")
 METHOD = os.getenv("METHOD")
 
 def run_system(run_name):
-    return "-".join(run_name.split("-")[1:3])
+    return "-".join(run_name.split("-")[-2:-1])
 
 
 def run_path(index):
@@ -14,7 +14,8 @@ def run_path(index):
     for path in index:
         system += run_system(path) + "-"
     system += ")"
-    return f"/data/run/run-{system}-{METHOD}"
+    dataset = "-".join(index[0].split("-")[1:-2])
+    return f"/data/run/run-{dataset}-{system}-{METHOD}"
 
 
 def main():

@@ -7,7 +7,7 @@ if not pt.started():
 METHOD = os.getenv("METHOD")
 
 def get_dataset_subcollection(dataset):
-    return dataset.split("-")[1]
+    return dataset.split("-")[-2]
 
 
 def get_querie_path(dataset):

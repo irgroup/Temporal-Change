@@ -32,7 +32,7 @@ def load_queries(queries_dir):
         if file.endswith(".pt"):
             queries.append(torch.load(queries_dir + "/" + file).numpy())
 
-    with open(queries_dir+"/ids.json", "r") as file:
+    with open(queries_dir+"/e5_embeddings-test-ids.json", "r") as file:
         querie_ids = json.load(file)
 
     queries = np.concatenate(queries)
