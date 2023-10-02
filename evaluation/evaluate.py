@@ -176,7 +176,7 @@ def evaluate_replicability(table, mode=""):
                 qrel_rpl_path = get_qrels_name_from_row(row)
 
                 rpl_eval = RplEvaluator(
-                    qrel_orig_path="../data/qrels/" + N + mode,
+                    qrel_orig_path="../data/qrels/" + qrel_orig_path + mode,
                     run_b_orig_path=f"../data/run{mode}/" + run_b_orig_path,
                     run_a_orig_path=f"../data/run{mode}/" + run_a_orig_path,
                     run_b_rep_path=f"../data/run{mode}/" + run_b_rep_path,
@@ -260,55 +260,71 @@ def evaluate_replicability(table, mode=""):
 
 # Replicability
 def evaluate_reproducibility(table, mode=""):
+    cutoffs = [100, 50, 20, 10, 5]  # max 281
+
     def _evaluate_reproducibility(row, mode):
         # This fails if topics are in the advanced run but not in the baseline run. This is the case if the baseline run retrieves 0 docs for a topic but an advanced system retrieves any, for example, because it bridges the lexical gap.
         if is_reprocuction(row):
-            try:
-                # Original
-                # get qrel baseline
-                qrel_orig_path = get_qrels_name_from_row(
-                    runs_b_orig[runs_b_orig["dataset"] == row["dataset"]].iloc[0]
-                )
-                # baseline
-                run_b_orig_path = runs_b_orig[
-                    runs_b_orig["dataset"] == row["dataset"]
-                ].iloc[0]["filename"]
-                # advanced
-                run_a_orig_path = runs_a_orig[
-                    (runs_a_orig["dataset"] == row["dataset"])
-                    & (runs_a_orig["method"] == row["method"])
-                ].iloc[0]["filename"]
+            # Original
+            # get qrel baseline
+            qrel_orig_path = get_qrels_name_from_row(
+                runs_b_orig[runs_b_orig["dataset"] == row["dataset"]].iloc[0]
+            )
+            # baseline
+            run_b_orig_path = runs_b_orig[
+                runs_b_orig["dataset"] == row["dataset"]
+            ].iloc[0]["filename"]
+            # advanced
+            run_a_orig_path = runs_a_orig[
+                (runs_a_orig["dataset"] == row["dataset"])
+                & (runs_a_orig["method"] == row["method"])
+            ].iloc[0]["filename"]
 
-                # Replicated
-                # get baseline
-                run_b_rep_path = runs_b_rep[
-                    runs_b_rep["subcollection"] == row["subcollection"]
-                ].iloc[0]["filename"]
-                # get qrel advanced
-                qrel_rpl_path = get_qrels_name_from_row(row)
-                
-                rpd_eval = RpdEvaluator(
-                    qrel_orig_path="../data/qrels/" + qrel_orig_path + mode,
-                    run_b_orig_path=f"../data/run{mode}/" + run_b_orig_path,
-                    run_a_orig_path=f"../data/run{mode}/" + run_a_orig_path,
-                    run_b_rep_path=f"../data/run{mode}/" + run_b_rep_path,
-                    run_a_rep_path=f"../data/run{mode}/" + row["filename"],
-                    qrel_rpl_path="../data/qrels/" + qrel_rpl_path + mode,
-                    )
+            # Replicated
+            # get baseline
+            run_b_rep_path = runs_b_rep[
+                runs_b_rep["subcollection"] == row["subcollection"]
+            ].iloc[0]["filename"]
+            # get qrel advanced
+            qrel_rpl_path = get_qrels_name_from_row(row)
+            
+            rpd_eval = RpdEvaluator(
+                qrel_orig_path="../data/qrels/" + qrel_orig_path + mode,
+                run_b_orig_path=f"../data/run{mode}/" + run_b_orig_path,
+                run_a_orig_path=f"../data/run{mode}/" + run_a_orig_path,
+                run_b_rep_path=f"../data/run{mode}/" + run_b_rep_path,
+                run_a_rep_path=f"../data/run{mode}/" + row["filename"],
+                qrel_rpl_path="../data/qrels/" + qrel_rpl_path + mode,
+                )
     
+            try:
                 rpd_eval.trim()
                 rpd_eval.evaluate()
-                ret = {
-                    "rmse": rpd_eval.rmse(),
-                    "rbo": rpd_eval.rbo(),
-                }
+                ret = {"rmse": rpd_eval.rmse()}
             except:
-                print(
-                    "Error in",
-                    row["filename"],
-                    "not all topics match with BM25 baseline",
-                )
-                ret = {"rmse": np.nan, "rbo": np.nan}
+                ret["rmse"] = {}
+                print("Error RMSE", row["filename"])
+
+            try:
+                ret["rbo"] = {}
+                for cutoff in cutoffs:
+                    rpd_eval.trim(t=cutoff)
+                    rpd_eval.evaluate()
+                    ret["rbo"][f"rbo_{cutoff}"] = arp(rpd_eval.rbo()['advanced'])
+            except:
+                ret["rbo"] = {}
+                print("Error RBO", row["filename"])
+            
+            try:
+                ret["ktau"] = {}
+                for cutoff in cutoffs:
+                    rpd_eval.trim(t=cutoff)
+                    rpd_eval.evaluate()
+                    ret["ktau"][f"ktau_{cutoff}"] = arp(rpd_eval.ktau_union()['advanced'])
+            except:
+                ret["ktau"] = {}
+                print("Error KTau", row["filename"])
+            
             return ret
         else:
             return {"rmse": np.nan, "rbo": np.nan}
@@ -316,20 +332,20 @@ def evaluate_reproducibility(table, mode=""):
     # group runs
     runs_b_orig = table[
         (table["subcollection"].isin(["WT", "t1", "round1"]))
-        & (table["method"] == "BM25")
+        & (table["method"] == "bm25")
     ]
     runs_a_orig = table[
         (table["subcollection"].isin(["WT", "t1", "round1"]))
-        & (table["method"] != "BM25")
+        & (table["method"] != "bm25")
     ]
 
     runs_b_rep = table[
         (~table["subcollection"].isin(["WT", "t1", "round1"]))
-        & (table["method"] == "BM25")
+        & (table["method"] == "bm25")
     ]
     runs_a_rep = table[
         (~table["subcollection"].isin(["WT", "t1", "round1"]))
-        & (table["method"] != "BM25")
+        & (table["method"] != "bm25")
     ]
 
     # evaluate replication
@@ -347,10 +363,10 @@ def evaluate_reproducibility(table, mode=""):
         [table.drop(["rbo"], axis=1), table["rbo"].apply(pd.Series).add_prefix("RBO_")],
         axis=1,
     )
-    table = pd.concat(
-        [table.drop(["RBO_advanced"], axis=1), table["RBO_advanced"].apply(pd.Series).add_prefix("RBO_")],
-        axis=1,
-    )
+    # table = pd.concat(
+    #     [table.drop(["RBO_advanced"], axis=1), table["RBO_advanced"].apply(pd.Series).add_prefix("RBO_")],
+    #     axis=1,
+    # )
     table = pd.concat(
         [table.drop(["rmse"], axis=1), table["rmse"].apply(pd.Series).add_prefix("RMSE_")],
         axis=1,
@@ -400,12 +416,10 @@ def table_ARP_statsig(df, dataset, subcollections, highlight=True, save=False, m
         runs_table["sorter"] = runs_table["method"].replace(sort_dict)
         runs_table = runs_table.sort_values("sorter").drop("sorter", axis=1)
 
-        run_names = runs_table["filename"].values
-
         runs = []
         names = []
         for _, row in runs_table.iterrows():
-            runs.append(pt.io.read_results("../data/run/" + row["filename"]))
+            runs.append(pt.io.read_results(f"../data/run{mode}/" + row["filename"]))
             names.append(row["method"])
 
         # qrels
@@ -418,9 +432,11 @@ def table_ARP_statsig(df, dataset, subcollections, highlight=True, save=False, m
         )
         if dataset =="longeval" and subcollection == "WT":
             topics_path = "../data/index/index-longeval-WT-pyterrier/queries/full.trec"
-
-
-        topics = pt.io.read_topics(topics_path)
+        
+        if mode and dataset =="longeval":
+            topics = pt.io.read_topics("longeval_topics_core_queries_unified.tsv", format="singleline")
+        else:
+            topics = pt.io.read_topics(topics_path)
 
         # evaluation
         res = pt.Experiment(

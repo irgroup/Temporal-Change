@@ -83,7 +83,7 @@ def plot_per_topic_dif(df, dataset, method, measure, subcollections, cut_off=100
     for subcollection in subcollections:
         per_topic = df[(df["dataset"]==dataset)&(df["subcollection"]==subcollection) & (df["method"]==method)].iloc[0]["arp_per_topic"]
         for topic in per_topic.keys():
-            data[topic][subcollection] = per_topic[topic][f"{measure}"]
+            data[topic][subcollection] = per_topic[topic][measure]
     data = pd.DataFrame(data).T.head(cut_off)
 
 
@@ -112,7 +112,7 @@ def plot_per_topic_delta(df, dataset, method, measure, subcollections, cut_off=1
         per_topic = df[(df["dataset"]==dataset) & (df["subcollection"]==subcollection) & (df["method"]==method)].iloc[0]["arp_per_topic"]
 
         for topic in per_topic.keys():
-            data[topic][subcollection] = per_topic[topic][f"ARP_{measure}"]
+            data[topic][subcollection] = per_topic[topic][measure]
 
     data = pd.DataFrame(data).T.head(cut_off)
 
