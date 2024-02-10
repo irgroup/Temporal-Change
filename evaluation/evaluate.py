@@ -34,7 +34,9 @@ def load_runs_metadata_table(mode=""):
     # runs = runs[
     #     ~((runs["subcollection"] == "WT") & (runs["queries"] != "test"))
     # ]  # longeval WT test only
-    runs = runs[~((runs["subcollection"]=="WT") & (runs["queries"]!="queries"))]  # longeval WT all
+    runs = runs[
+        ~((runs["subcollection"] == "WT") & (runs["queries"] != "queries"))
+    ]  # longeval WT all
     runs = runs[
         runs["method"].isin(
             [
@@ -69,9 +71,6 @@ def load_evaluator_with_qrels(qrels_name, mode=""):
     return evaluator
 
 
-
-
-
 def _evaluate_arp(row, mode):
     evaluator = load_evaluator_with_qrels(get_qrels_name_from_row(row), mode=mode)
 
@@ -93,7 +92,8 @@ def evaluate_arp(table, mode=""):
 
 
 def is_reprocuction(row):
-    if row["subcollection"] not in ["WT", "t1", "round1"] and row["method"] != "bm25":
+    # if row["subcollection"] not in ["WT", "t1", "round1"] and row["method"] != "bm25":
+    if row["subcollection"] not in ["WT", "t1", "round1"]:
         return True
     else:
         return False
@@ -257,7 +257,6 @@ def evaluate_replicability(table, mode=""):
     return table
 
 
-
 # Replicability
 def evaluate_reproducibility(table, mode=""):
     cutoffs = [100, 50, 20, 10, 5]  # max 281
@@ -287,7 +286,7 @@ def evaluate_reproducibility(table, mode=""):
             ].iloc[0]["filename"]
             # get qrel advanced
             qrel_rpl_path = get_qrels_name_from_row(row)
-            
+
             rpd_eval = RpdEvaluator(
                 qrel_orig_path="../data/qrels/" + qrel_orig_path + mode,
                 run_b_orig_path=f"../data/run{mode}/" + run_b_orig_path,
@@ -295,8 +294,8 @@ def evaluate_reproducibility(table, mode=""):
                 run_b_rep_path=f"../data/run{mode}/" + run_b_rep_path,
                 run_a_rep_path=f"../data/run{mode}/" + row["filename"],
                 qrel_rpl_path="../data/qrels/" + qrel_rpl_path + mode,
-                )
-    
+            )
+
             try:
                 rpd_eval.trim()
                 rpd_eval.evaluate()
@@ -310,21 +309,23 @@ def evaluate_reproducibility(table, mode=""):
                 for cutoff in cutoffs:
                     rpd_eval.trim(t=cutoff)
                     rpd_eval.evaluate()
-                    ret["rbo"][f"rbo_{cutoff}"] = arp(rpd_eval.rbo()['advanced'])
+                    ret["rbo"][f"rbo_{cutoff}"] = arp(rpd_eval.rbo()["advanced"])
             except:
                 ret["rbo"] = {}
                 print("Error RBO", row["filename"])
-            
+
             try:
                 ret["ktau"] = {}
                 for cutoff in cutoffs:
                     rpd_eval.trim(t=cutoff)
                     rpd_eval.evaluate()
-                    ret["ktau"][f"ktau_{cutoff}"] = arp(rpd_eval.ktau_union()['advanced'])
+                    ret["ktau"][f"ktau_{cutoff}"] = arp(
+                        rpd_eval.ktau_union()["advanced"]
+                    )
             except:
                 ret["ktau"] = {}
                 print("Error KTau", row["filename"])
-            
+
             return ret
         else:
             return {"rmse": np.nan, "rbo": np.nan}
@@ -334,19 +335,21 @@ def evaluate_reproducibility(table, mode=""):
         (table["subcollection"].isin(["WT", "t1", "round1"]))
         & (table["method"] == "bm25")
     ]
-    runs_a_orig = table[
-        (table["subcollection"].isin(["WT", "t1", "round1"]))
-        & (table["method"] != "bm25")
-    ]
+    # runs_a_orig = table[
+    #     (table["subcollection"].isin(["WT", "t1", "round1"]))
+    #     & (table["method"] != "bm25")
+    # ]
+    runs_a_orig = table[(table["subcollection"].isin(["WT", "t1", "round1"]))]
 
     runs_b_rep = table[
         (~table["subcollection"].isin(["WT", "t1", "round1"]))
         & (table["method"] == "bm25")
     ]
-    runs_a_rep = table[
-        (~table["subcollection"].isin(["WT", "t1", "round1"]))
-        & (table["method"] != "bm25")
-    ]
+    # runs_a_rep = table[
+    #     (~table["subcollection"].isin(["WT", "t1", "round1"]))
+    #     & (table["method"] != "bm25")
+    # ]
+    runs_a_rep = table[(~table["subcollection"].isin(["WT", "t1", "round1"]))]
 
     # evaluate replication
     table["reproducibility"] = table.apply(_evaluate_reproducibility, mode=mode, axis=1)
@@ -368,16 +371,20 @@ def evaluate_reproducibility(table, mode=""):
     #     axis=1,
     # )
     table = pd.concat(
-        [table.drop(["rmse"], axis=1), table["rmse"].apply(pd.Series).add_prefix("RMSE_")],
+        [
+            table.drop(["rmse"], axis=1),
+            table["rmse"].apply(pd.Series).add_prefix("RMSE_"),
+        ],
         axis=1,
     )
     table = pd.concat(
-        [table.drop(["RMSE_advanced"], axis=1), table["RMSE_advanced"].apply(pd.Series).add_prefix("RMSE_")],
+        [
+            table.drop(["RMSE_advanced"], axis=1),
+            table["RMSE_advanced"].apply(pd.Series).add_prefix("RMSE_"),
+        ],
         axis=1,
     )
     return table
-
-
 
 
 def table_ARP_statsig(df, dataset, subcollections, highlight=True, save=False, mode=""):
@@ -423,18 +430,22 @@ def table_ARP_statsig(df, dataset, subcollections, highlight=True, save=False, m
             names.append(row["method"])
 
         # qrels
-        qrels_path = "../data/qrels/" + get_qrels_name_from_row(runs_table.iloc[0]) + mode
+        qrels_path = (
+            "../data/qrels/" + get_qrels_name_from_row(runs_table.iloc[0]) + mode
+        )
         qrels = pt.io.read_qrels(qrels_path)
 
         # topics
         topics_path = topics_paths[dataset].format(
             dataset=dataset, subcollection=subcollection
         )
-        if dataset =="longeval" and subcollection == "WT":
+        if dataset == "longeval" and subcollection == "WT":
             topics_path = "../data/index/index-longeval-WT-pyterrier/queries/full.trec"
-        
-        if mode and dataset =="longeval":
-            topics = pt.io.read_topics("longeval_topics_core_queries_unified.tsv", format="singleline")
+
+        if mode and dataset == "longeval":
+            topics = pt.io.read_topics(
+                "longeval_topics_core_queries_unified.tsv", format="singleline"
+            )
         else:
             topics = pt.io.read_topics(topics_path)
 
@@ -509,9 +520,11 @@ def long_table(df):
     long["group"] = long["variable"].str.split("_", n=1).str[0]
     long["measure"] = long["variable"].str.split("_", n=1).str[1]
 
-    long = long[long["measure"]!="baseline"]
-    long = long[long["measure"]!="0"]
+    long = long[long["measure"] != "baseline"]
+    long = long[long["measure"] != "0"]
 
-    long["value"] = long["value"].apply(lambda x: round(x, 3) if isinstance(x, float) else x)
+    long["value"] = long["value"].apply(
+        lambda x: round(x, 3) if isinstance(x, float) else x
+    )
     long = long.replace({"method": DISPLAY_NAMES})
     return long

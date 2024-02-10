@@ -1,4 +1,0 @@
-git+https://github.com/terrierteam/pyterrier_t5.git
-faiss-gpu==1.6.3
-pandas
-ir_datasets
