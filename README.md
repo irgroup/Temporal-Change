@@ -1,12 +1,11 @@
-# Temporal Reproducibility of Retrieval Effectiveness
-This repository contains the code to investigate the temporal reproducibility of retrieval effectiveness.
+# Evaluation of Temporal Change in IR Test Collections
+This repository contains the code to investigate the temporal change of retrieval effectiveness.
 Five state-of-the-art retrieval systems are revisited in different search scenarios with temporal changes in experimental components (such as documents, topics, and qrels), and it is investigated how they reproduce their effectiveness at a later point in time.
 
 This repository holds the code to create and augment the datasets to simulate the different EE, create and run the retrieval systems in Docker containers to produce the runs, and analyze the runs to investigate the temporal reproducibility of retrieval effectiveness. In the following, the usage instructions are listed to reproduce the results.
 
 
 ## Install dependencies
-
 All dependencies are listed in the [requirements.txt](https://github.com/irgroup/Temporal-Persistence/blob/main/requirements.txt) file. To install the dependencies, run the following command:
 
 ```bash
